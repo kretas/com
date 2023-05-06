@@ -1,2 +1,1 @@
-// eslint ignore next line
-export { default as UploadWidget } from './src/components/widgets/UploadWidget.vue';
+export { default as UploadWidget } from './components/widgets/UploadWidget.vue';
