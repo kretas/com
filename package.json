@@ -1,6 +1,6 @@
 {
-  "name": "comcom",
-  "version": "1.0.0",
+  "name": "comcomhalen",
+  "version": "0.0.1",
   "description": "common components",
   "main": "index.js",
   "scripts": {
@@ -10,7 +10,7 @@
     "type": "git",
     "url": "git+https://github.com/kretas/com.git"
   },
-  "author": "Dan",
+  "author": "danthenman42",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/kretas/com/issues"
