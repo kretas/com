@@ -1,0 +1,94 @@
+// src/com/functions/supabaseQueries.js
+const functions = {
+  async $getAll(supabase, table) {
+    try {
+      const { data, error } = await supabase.from(table).select("*");
+
+      if (error) {
+        console.error("Error fetching data from table:", error);
+        return null;
+      } else {
+        return data;
+      }
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
+  },
+
+  async $getById(supabase, table, id) {
+    try {
+      const { data, error } = await supabase
+        .from(table)
+        .select("*")
+        .eq("id", id)
+        .single();
+
+      if (error) {
+        console.error("Error fetching data from" + table + " by id: ", error);
+        return null;
+      } else {
+        return data;
+      }
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
+  },
+
+  async $updateById(supabase, table, id, updates) {
+    try {
+      const { data, error } = await supabase
+        .from(table)
+        .update(updates)
+        .eq("id", id);
+
+      if (error) {
+        console.error("Error updating data by id:", error);
+        return null;
+      } else {
+        return data;
+      }
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
+  },
+
+  async $create(supabase, table, newItem) {
+    try {
+      const { data, error } = await supabase.from(table).insert(newItem);
+
+      if (error) {
+        console.error("Error creating new item:", error);
+        return null;
+      } else {
+        return data;
+      }
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
+  },
+
+  async $upload(supabase, bucket, filePath, file) {
+    try {
+      const { data, error } = await supabase.storage.from(bucket).upload(filePath, file);
+      if (error) {
+        console.error("Error creating new item:", error);
+        return null;
+      } else {
+        return data;
+      }
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
+  }
+};
+
+export default function (app, supabase) {
+  for (const [name, fn] of Object.entries(functions)) {
+    app.config.globalProperties[name] = (...args) => fn(supabase, ...args);
+  }
+}
