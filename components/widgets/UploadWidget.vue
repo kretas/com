@@ -1,69 +1,59 @@
 <template>
-  <div>
-    <img v-if="src" :src="src" alt="Avatar" class="avatar image" :style="{ height: size + 'em', width: size + 'em' }" />
-    <div v-else class="avatar no-image" :style="{ height: size + 'em', width: size + 'em' }" />
-
-    <div :style="{ width: size + 'em' }">
-      <label class="button primary block" for="single">
-        {{ uploading ? 'Uploading ...' : 'Upload' }}
-      </label>
-      <input
-        style="visibility: hidden; position: absolute"
-        type="file"
-        id="single"
-        accept="image/*"
-        @change="uploadAvatar"
-        :disabled="uploading"
-      />
-    </div>
+  <div v-if="type == 'overlay'" class="absolute-full text-subtitle2 flex flex-center"
+    style="border-radius: inherit; background: rgba(0,0,0,0.2)">
+    <q-icon name="add_a_photo" color="white" size="42px" />
+    <label for="single"
+      style="position: absolute; top:0; right:0; height: 100%; width: 100%; z-index: 1; cursor: pointer">
+    </label>
+    <input ref="fileInput" style="visibility: hidden; position: absolute" type="file" id="single" accept="image/*" @change="onFileChange"
+      :disabled="uploading" />
+  </div>
+  <div v-else>
+    <q-file outlined v-model="files" :label="uploading ? 'Uploading ...' : 'Upload'" accept="image/*"
+      :disabled="uploading" :loading="uploading" />
   </div>
 </template>
 
 <script>
 export default {
-  props: ['path', 'size'],
+  props: ['type'],
   data() {
     return {
       uploading: false,
-      src: '',
       files: null,
     };
   },
   methods: {
-    async downloadImage() {
-      try {
-        const { data, error } = await this.$supabase.storage.from('avatars').download(this.path);
-        if (error) throw error;
-        this.src = URL.createObjectURL(data);
-      } catch (error) {
-        console.error('Error downloading image: ', error.message);
-      }
+    onFileChange(evt) {
+      this.files = evt.target.files[0];
     },
-    async uploadAvatar(evt) {
-      this.files = evt.target.files;
+    async uploadFile() {
       try {
         this.uploading = true;
         if (!this.files || this.files.length === 0) {
           throw new Error('You must select an image to upload.');
         }
-
-        const file = this.files[0];
+        const file = this.files;
         const fileExt = file.name.split('.').pop();
         const filePath = `${Math.random()}.${fileExt}`;
 
         let { error: uploadError } = await this.$upload('avatars', filePath, file);
 
         if (uploadError) throw uploadError;
-        this.$emit('update:path', filePath);
-        this.$emit('upload');
+        this.$emit('upload', filePath);
       } catch (error) {
         alert(error.message);
       } finally {
         this.uploading = false;
+        this.$refs.fileInput.value = "";
       }
     },
   },
   watch: {
+    files() {
+      console.log('files changed');
+      if (this.files) this.uploadFile();
+    },
     path() {
       if (this.path) this.downloadImage();
     },

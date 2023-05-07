@@ -75,7 +75,21 @@ const functions = {
     try {
       const { data, error } = await supabase.storage.from(bucket).upload(filePath, file);
       if (error) {
-        console.error("Error creating new item:", error);
+        console.error("Error uploading file:", error);
+        return null;
+      } else {
+        return data;
+      }
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
+  },
+  async $download(supabase, bucket, file) {
+    try {
+      const { data, error } = await supabase.storage.from(bucket).download(file);
+      if (error) {
+        console.error("Error downloading file:", error);
         return null;
       } else {
         return data;
@@ -85,6 +99,7 @@ const functions = {
       return null;
     }
   }
+
 };
 
 export default function (app, supabase) {
