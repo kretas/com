@@ -36,6 +36,27 @@ const functions = {
     }
   },
 
+  async $getByField(supabase, table, field, value) {
+    console.log(table, field, value)
+    try {
+      const { data, error } = await supabase
+        .from(table)
+        .select("*")
+        .eq(field, value)
+        .single();
+
+      if (error) {
+        console.error("Error fetching data from" + table + " by " + field, error);
+        return null;
+      } else {
+        return data;
+      }
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
+  },
+
   async $updateById(supabase, table, id, updates) {
     try {
       const { data, error } = await supabase
