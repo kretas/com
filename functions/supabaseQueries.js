@@ -37,7 +37,6 @@ const functions = {
   },
 
   async $getByField(supabase, table, field, value) {
-    console.log(table, field, value)
     try {
       const { data, error } = await supabase
         .from(table)

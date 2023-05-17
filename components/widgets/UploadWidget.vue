@@ -51,7 +51,6 @@ export default {
   },
   watch: {
     files() {
-      console.log('files changed');
       if (this.files) this.uploadFile();
     },
     path() {
