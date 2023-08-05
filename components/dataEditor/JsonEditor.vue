@@ -50,9 +50,23 @@
             @click="addEntry(key)" />
         </div>
       </div>
+      <!-- if no object -->
+      <div v-else class="flex q-my-sm">
+        <div class="q-ma-sm" style="min-width: 90px">{{ key }}</div>
+        <q-input v-model="localData[key]" style="min-width: 90px" dense />
+        <q-btn
+          class="q-ml-sm"
+          label="Delete"
+          dense
+          noCaps
+          color="negative"
+          outline
+          style="width: 60px"
+          @click="removeEntryArray(key)" />
+      </div>
     </div>
 
-    <div class="flex q-my-md">
+    <div v-if="!nonObject" class="flex q-my-md">
       <q-input v-model="newCategoryKey" filled dense label="Category Name" />
       <q-btn
         label="Add Category"
@@ -61,6 +75,27 @@
         @click="addCategory"
         :disabled="!newCategoryKey" />
     </div>
+    <div v-if="nonObject" class="flex q-my-md">
+      <q-select
+        v-model="addNonObjectKey"
+        :options="addOptions"
+        use-input
+        input-debounce="300"
+        style="width: 150px"
+        filled
+        dense
+        label="Key"
+        @filter="filterFn"
+        @new-value="createValue"
+        new-value-mode="add" />
+      <q-btn
+        label="Add New Entry"
+        color="positive"
+        noCaps
+        @click="addNonObject"
+        :disabled="!addNonObjectKey" />
+      <q-btn @click="persist" label="persist" color="positive" noCaps />
+    </div>
   </div>
 </template>
 
@@ -68,6 +103,14 @@
 export default {
   name: "JsonEditor",
   props: {
+    nonObject: {
+      type: Boolean,
+      default: false,
+    },
+    addOptions: {
+      type: Array,
+      default: () => [],
+    },
     data: {
       type: Object,
       required: true,
@@ -79,6 +122,7 @@ export default {
       newEntryKey: {},
       newEntryValue: {},
       newCategoryKey: "",
+      addNonObjectKey: "",
     };
   },
   watch: {
@@ -87,12 +131,36 @@ export default {
     },
   },
   methods: {
+    filterFn(val, update) {
+      if (val === "") {
+        update(() => {
+          this.option = this.addOptions;
+        });
+        return;
+      }
+
+      update(() => {
+        const needle = val.toLowerCase();
+        this.option = this.addOptions.filter(
+          (v) => v.toLowerCase().indexOf(needle) > -1
+        );
+      });
+    },
+    persist() {
+      this.$emit("update:data", this.localData);
+    },
+    createValue(val, done) {
+      if (val.length > 0) {
+        // eslint-disable-next-line vue/no-mutating-props
+        this.addOptions.push(val);
+        done(val);
+      }
+    },
     isObject(value) {
       return typeof value === "object" && value !== null;
     },
     addCategory() {
       if (!this.newCategoryKey) {
-        // If the key is not provided, return early
         return;
       }
 
@@ -101,9 +169,21 @@ export default {
 
       this.$emit("update:data", this.localData);
     },
+    addNonObject() {
+      if (!this.addNonObjectKey) {
+        return;
+      }
+
+      this.localData = {
+        ...this.localData,
+        [this.addNonObjectKey]: "",
+      };
+      this.addNonObjectKey = "";
+
+      this.$emit("update:data", this.localData);
+    },
     addEntry(key) {
       if (!this.newEntryKey[key] || !this.newEntryValue[key]) {
-        // If the key or value is not provided, return early
         return;
       }
 
@@ -118,9 +198,11 @@ export default {
     },
 
     removeEntry(categoryKey, entryKey) {
-      // Delete the entry
       delete this.localData[categoryKey][entryKey];
-      // Emit the updated data back to the parent
+      this.$emit("update:data", this.localData);
+    },
+    removeEntryArray(key) {
+      delete this.localData[key];
       this.$emit("update:data", this.localData);
     },
     removeCategory(key) {

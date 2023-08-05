@@ -93,6 +93,21 @@ const functions = {
       return null;
     }
   },
+  async $deleteById(supabase, table, id) {
+    try {
+      const { data, error } = await supabase.from(table).delete().eq("id", id);
+
+      if (error) {
+        console.error("Error deleting data by id:", error);
+        return null;
+      } else {
+        return data;
+      }
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
+  },
 
   async $create(supabase, table, newItem) {
     try {
