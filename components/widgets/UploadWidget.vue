@@ -1,22 +1,44 @@
 <template>
-  <div v-if="type == 'overlay'" class="absolute-full text-subtitle2 flex flex-center"
-    style="border-radius: inherit; background: rgba(0,0,0,0.2)">
+  <div
+    v-if="type == 'overlay'"
+    class="absolute-full text-subtitle2 flex flex-center"
+    style="border-radius: inherit; background: rgba(0, 0, 0, 0.2)">
     <q-icon name="add_a_photo" color="white" size="42px" />
-    <label for="single"
-      style="position: absolute; top:0; right:0; height: 100%; width: 100%; z-index: 1; cursor: pointer">
+    <label
+      for="single"
+      style="
+        position: absolute;
+        top: 0;
+        right: 0;
+        height: 100%;
+        width: 100%;
+        z-index: 1;
+        cursor: pointer;
+      ">
     </label>
-    <input ref="fileInput" style="visibility: hidden; position: absolute" type="file" id="single" accept="image/*" @change="onFileChange"
+    <input
+      ref="fileInput"
+      style="visibility: hidden; position: absolute"
+      type="file"
+      id="single"
+      accept="image/*"
+      @change="onFileChange"
       :disabled="uploading" />
   </div>
   <div v-else>
-    <q-file outlined v-model="files" :label="uploading ? 'Uploading ...' : 'Upload'" accept="image/*"
-      :disabled="uploading" :loading="uploading" />
+    <q-file
+      outlined
+      v-model="files"
+      :label="uploading ? 'Uploading ...' : 'Upload'"
+      accept="image/*"
+      :disabled="uploading"
+      :loading="uploading" />
   </div>
 </template>
 
 <script>
 export default {
-  props: ['type'],
+  props: ["type", "bucket"],
   data() {
     return {
       uploading: false,
@@ -31,20 +53,25 @@ export default {
       try {
         this.uploading = true;
         if (!this.files || this.files.length === 0) {
-          throw new Error('You must select an image to upload.');
+          throw new Error("You must select an image to upload.");
         }
         const file = this.files;
-        const fileExt = file.name.split('.').pop();
+        const fileExt = file.name.split(".").pop();
         const filePath = `${Math.random()}.${fileExt}`;
 
-        let { error: uploadError } = await this.$upload('avatars', filePath, file);
+        let { error: uploadError } = await this.$upload(
+          this.bucket,
+          filePath,
+          file
+        );
 
         if (uploadError) throw uploadError;
-        this.$emit('upload', filePath);
+        this.$emit("upload", filePath);
       } catch (error) {
         alert(error.message);
       } finally {
         this.uploading = false;
+        console.log(this.$refs.fileInput);
         this.$refs.fileInput.value = "";
       }
     },
