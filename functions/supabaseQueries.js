@@ -117,7 +117,7 @@ const functions = {
         console.error("Error creating new item:", error);
         return null;
       } else {
-        return data;
+        return true;
       }
     } catch (error) {
       console.error(error);
@@ -125,9 +125,25 @@ const functions = {
     }
   },
 
+  async $removeFile(supabase, bucket, filePath) {
+    try {
+      const { data, error } = await supabase.storage.from(bucket).remove(filePath);
+      if (error) {
+        console.error("Error uploading file:", error);
+        return null;
+      } else {
+        return data;
+      }
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
+  },
   async $upload(supabase, bucket, filePath, file) {
     try {
-      const { data, error } = await supabase.storage.from(bucket).upload(filePath, file);
+      const { data, error } = await supabase.storage.from(bucket).upload(filePath, file, {
+        upsert: true
+      });
       if (error) {
         console.error("Error uploading file:", error);
         return null;

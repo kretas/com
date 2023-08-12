@@ -38,7 +38,7 @@
 
 <script>
 export default {
-  props: ["type", "bucket"],
+  props: ["type", "bucket", "fileName"],
   data() {
     return {
       uploading: false,
@@ -57,7 +57,14 @@ export default {
         }
         const file = this.files;
         const fileExt = file.name.split(".").pop();
-        const filePath = `${Math.random()}.${fileExt}`;
+        let filePath = "";
+        console.log(this.fileName);
+        if (this.fileName) {
+          filePath = `${this.fileName}.${fileExt}`;
+        } else {
+          filePath = `${Math.random()}.${fileExt}`;
+        }
+        console.log(filePath);
 
         let { error: uploadError } = await this.$upload(
           this.bucket,
@@ -71,8 +78,8 @@ export default {
         alert(error.message);
       } finally {
         this.uploading = false;
-        console.log(this.$refs.fileInput);
         this.$refs.fileInput.value = "";
+        return true;
       }
     },
   },
