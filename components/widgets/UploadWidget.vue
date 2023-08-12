@@ -21,7 +21,6 @@
       style="visibility: hidden; position: absolute"
       type="file"
       id="single"
-      accept="image/*"
       @change="onFileChange"
       :disabled="uploading" />
   </div>
@@ -30,7 +29,6 @@
       outlined
       v-model="files"
       :label="uploading ? 'Uploading ...' : 'Upload'"
-      accept="image/*"
       :disabled="uploading"
       :loading="uploading" />
   </div>
