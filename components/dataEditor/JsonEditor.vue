@@ -11,7 +11,7 @@
             outline
             @click="removeCategory(key)" />
         </div>
-
+        <slot name="object-summary" :value="value"></slot>
         <div v-for="(entryVal, entryKey, index) in value" :key="index">
           <div class="flex q-my-sm">
             <div class="q-ma-sm" style="min-width: 90px">{{ entryKey }}</div>
@@ -37,6 +37,13 @@
             filled
             style="width: 100px"
             label="Key" />
+          <slot
+            name="new-entry"
+            :cat="key"
+            :key="newEntryKey[key]"
+            :value="newEntryValue[key]"
+            :update-value="updateNewEntryValue">
+          </slot>
           <q-input
             v-model="newEntryValue[key]"
             dense
@@ -131,6 +138,10 @@ export default {
     },
   },
   methods: {
+    updateNewEntryValue(key, value) {
+      console.log(key, value);
+      this.newEntryValue[key] = value;
+    },
     filterFn(val, update) {
       if (val === "") {
         update(() => {
