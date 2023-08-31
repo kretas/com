@@ -17,7 +17,7 @@
             <div class="q-ma-sm" style="min-width: 90px">{{ entryKey }}</div>
             <q-input
               v-model="localData[key][entryKey]"
-              style="min-width: 245px"
+              style="min-width: 220px"
               dense />
             <q-btn
               class="q-ml-sm"
