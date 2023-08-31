@@ -17,7 +17,7 @@
             <div class="q-ma-sm" style="min-width: 90px">{{ entryKey }}</div>
             <q-input
               v-model="localData[key][entryKey]"
-              style="min-width: 90px"
+              style="min-width: 245px"
               dense />
             <q-btn
               class="q-ml-sm"
@@ -139,7 +139,6 @@ export default {
   },
   methods: {
     updateNewEntryValue(key, value) {
-      console.log(key, value);
       this.newEntryValue[key] = value;
     },
     filterFn(val, update) {
