@@ -5,7 +5,20 @@
       :rows="rows"
       :columns="columns"
       :rows-per-page-options="[0]"
+      :filter="filter"
       @row-click="onRowClick">
+      <template v-slot:top-right>
+        <q-input
+          borderless
+          dense
+          debounce="300"
+          v-model="filter"
+          placeholder="Search">
+          <template v-slot:append>
+            <q-icon name="search" />
+          </template>
+        </q-input>
+      </template>
       <template v-slot:body-cell-status="props">
         <q-td :props="props">
           <div v-if="props.row.status === null || props.row.status === 'Open'">
@@ -40,6 +53,11 @@ export default {
       type: Function,
       required: true,
     },
+  },
+  data() {
+    return {
+      filter: "",
+    };
   },
 };
 </script>
