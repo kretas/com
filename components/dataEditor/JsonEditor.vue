@@ -18,6 +18,8 @@
             <q-input
               v-model="localData[key][entryKey]"
               style="min-width: 220px"
+              type="textarea"
+              autogrow
               dense />
             <q-btn
               class="q-ml-sm"
