@@ -1,5 +1,19 @@
 // src/com/functions/supabaseQueries.js
 const functions = {
+  async $getMedia(supabase, bucket, file) {
+    try {
+      const { data, error } = await supabase.storage
+        .from(bucket)
+        .download(file);
+      if (error) throw error;
+
+      const objectUrl = URL.createObjectURL(data);
+      return objectUrl;
+    } catch (e) {
+      console.error(`Error downloading:`, e);
+      return null;
+    }
+  },
   async $getAll(supabase, table) {
     try {
       const { data, error } = await supabase.from(table).select("*");
